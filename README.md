@@ -60,18 +60,13 @@ produced a different output:
 
 ```
 $ make test-sols
-gcc -Wall -Wextra -O3 -o bin/sols-iter split-one-long-string/iter.c
-gcc -Wall -Wextra -O3 -o bin/sols-iter-struct split-one-long-string/iter-struct.c
-diff -quB --from-file <(./bin/sols-iter) <(./bin/sols-iter-struct) <(./bin/sols-strtok)
-Files /dev/fd/63 and /dev/fd/61 differ
-make: *** [Makefile:58: test-sols] Error 1
+diff -q --from-file output/sols-iter output/sols-iter-struct output/sols-strtok
+Files output/sols-iter and output/sols-strtok differ
+make: *** [Makefile:54: test-sols] Error 1
 $ make test-smss
-gcc -Wall -Wextra -O3 -o bin/smss-iter split-many-short-strings/iter.c
-gcc -Wall -Wextra -O3 -o bin/smss-iter-struct split-many-short-strings/iter-struct.c
-gcc -Wall -Wextra -O3 -o bin/smss-strtok split-many-short-strings/strtok.c
-diff -quB --from-file <(./bin/smss-iter) <(./bin/smss-iter-struct) <(./bin/smss-strtok)
-Files /dev/fd/63 and /dev/fd/61 differ
-make: *** [Makefile:58: test-smss] Error 1
+diff -q --from-file output/smss-iter output/smss-iter-struct output/smss-strtok
+Files output/smss-iter and output/smss-strtok differ
+make: *** [Makefile:54: test-smss] Error 1
 ```
 
 This is **intentional**. Let's see what is different about them in the `sols`

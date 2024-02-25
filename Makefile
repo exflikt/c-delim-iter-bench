@@ -7,9 +7,10 @@ CC = gcc
 CFLAGS = -Wall -Wextra
 CFLAGS += -O3
 
-BIN_DIR = bin/
-OUTPUT_DIR = output/
-TEST = diff -quB --from-file
+BIN_DIR = bin
+OUTPUT_DIR = output
+# Add -B (--ignore-blank-lines) switch to see if the tests pass
+TEST = diff -q --from-file
 BENCH = hyperfine --warmup=1 -N
 
 SUFFIXES = iter iter-struct strtok
@@ -25,9 +26,9 @@ help:
 	@echo "  clean    Remove binaries and output texts"
 	@echo "  help     Show this message"
 
-compile: $(foreach variant,$(VARIANTS),$(foreach suffix,$(SUFFIXES),$(BIN_DIR)$(variant)-$(suffix)))
+compile: $(foreach variant,$(VARIANTS),$(foreach suffix,$(SUFFIXES),$(BIN_DIR)/$(variant)-$(suffix)))
 
-run: $(foreach variant,$(VARIANTS),$(foreach suffix,$(SUFFIXES),run-$(variant)-$(suffix)))
+run: $(foreach variant,$(VARIANTS),$(foreach suffix,$(SUFFIXES),$(OUTPUT_DIR)/$(variant)-$(suffix)))
 
 test: $(foreach variant,$(VARIANTS),test-$(variant))
 
@@ -36,25 +37,22 @@ bench: $(foreach variant,$(VARIANTS),bench-$(variant))
 clean:
 	rm -rf $(BIN_DIR) $(OUTPUT_DIR)
 
-$(BIN_DIR):
+$(BIN_DIR)/sols-%: split-one-long-string/%.c
 	mkdir -p $(BIN_DIR)
-
-$(BIN_DIR)sols-%: split-one-long-string/%.c $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(BIN_DIR)smss-%: split-many-short-strings/%.c $(BIN_DIR)
+$(BIN_DIR)/smss-%: split-many-short-strings/%.c
+	mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $<
 
-$(OUTPUT_DIR):
-	mkdir -p $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%: $(BIN_DIR)/%
+	mkdir -p $(OUTPUT_DIR)/
+	./$< > $(OUTPUT_DIR)/$*
+	@echo "stdout is saved to $(OUTPUT_DIR)/$*"
 
-run-%: $(BIN_DIR)% $(OUTPUT_DIR)
-	./$< > $(OUTPUT_DIR)$*
-	@echo "stdout is saved to $(OUTPUT_DIR)$*"
+test-%: $(foreach suffix,$(SUFFIXES),$(OUTPUT_DIR)/%-$(suffix))
+	$(TEST) $(foreach stdout,$^,$(stdout))
 
-test-%: $(foreach suffix,$(SUFFIXES),$(BIN_DIR)%-$(suffix))
-	$(TEST) $(foreach binary,$^,<(./$(binary)))
-
-bench-%: $(foreach suffix,$(SUFFIXES),$(BIN_DIR)%-$(suffix))
+bench-%: $(foreach suffix,$(SUFFIXES),$(BIN_DIR)/%-$(suffix))
 	$(BENCH) $^
 
