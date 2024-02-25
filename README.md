@@ -7,7 +7,7 @@ Benchmark for splitting strings with a delimiter in C
 - `strtok`
   Standard C library function for tokenizing a string
 
-# Benchmark
+## Benchmark
 
 Benchmark for the binaries compiled with `-O3`:
 
@@ -52,7 +52,7 @@ In the benchmark, `iter` and `iter-struct` were roughly 1.4 times faster than
 input strings are kind of contrived. We should not take this to imply that
 `strtok` is slower **in general**.
 
-# Test Failure
+## Test Failure
 
 When we run tests for `sols` (split one long string) and `smss` (split many
 short strings), they fail with the output suggesting that the `strtok` version
@@ -141,3 +141,8 @@ which states that:
 > The strsep() function was introduced as a replacement for strtok(3), since
 > the latter cannot handle empty fields.  However, strtok(3) conforms to
 > C89/C99 and hence is more portable.
+
+## Feature Extension
+
+[`delimited-ext.c`](delimited-ext.c) has a struct definition for
+`DelimitedIter2`, which accepts multiple delimiters.
