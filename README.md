@@ -130,3 +130,14 @@ stack previously occupied by a boolean flag. I would not necessarily say this
 is a bug in `strtok`. It is probably more apt to say that the initial interface
 ended up being exposed as a public API without caring too much about this
 corner case in mind.
+
+Through more digging, i found [a SO answer](https://stackoverflow.com/questions/3375530/c-parse-empty-tokens-from-a-string-with-strtok/3375613#3375613)
+saying:
+> That's a limitation of strtok. The designers had whitespace-separated
+> tokens in mind.
+
+In the same thread, `strsep(3)` function is mentioned, and the man page of
+which states that:
+> The strsep() function was introduced as a replacement for strtok(3), since
+> the latter cannot handle empty fields.  However, strtok(3) conforms to
+> C89/C99 and hence is more portable.
